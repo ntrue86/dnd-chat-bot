@@ -1,0 +1,23 @@
+{
+  "name": "dnd-chat-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@discordjs/voice": "^0.18.0",
+    "@llama-node/llama-cpp": "^0.1.6",
+    "@types/node": "^22.15.20",
+    "better-sqlite3": "^11.10.0",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "openai": "^4.100.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
