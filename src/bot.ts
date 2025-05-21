@@ -40,6 +40,11 @@ client.on('messageCreate', async (message: Message) => {
     const Database = (await import('better-sqlite3')).default;
     const db = new Database(dbPath);
     db.prepare('DELETE FROM messages WHERE channel_id = ?').run(channelId);
+    // Seed the initial prompt if set
+    if (INITIAL_PROMPT) {
+      db.prepare('INSERT INTO messages (channel_id, role, content) VALUES (?, ?, ?)')
+        .run(channelId, 'Bot', INITIAL_PROMPT);
+    }
     db.close();
     await message.reply('Bot context has been reset for this channel.');
     return;
