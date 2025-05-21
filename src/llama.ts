@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import 'dotenv/config';
 
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434/api/generate';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.2';
