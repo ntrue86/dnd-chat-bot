@@ -73,7 +73,7 @@ client.on('messageCreate', async (message: Message) => {
   const reply = await generateLlamaResponse(fullPrompt);
   saveMessage(channelId, 'Bot', reply);
   // Discord message limit is 2000 chars per message, but we'll use 4000 as requested
-  const MAX_DISCORD_MESSAGE_LENGTH = 4000;
+  const MAX_DISCORD_MESSAGE_LENGTH = 2000;
   if (reply.length > MAX_DISCORD_MESSAGE_LENGTH) {
     for (let i = 0; i < reply.length; i += MAX_DISCORD_MESSAGE_LENGTH) {
       await message.reply(reply.slice(i, i + MAX_DISCORD_MESSAGE_LENGTH));
