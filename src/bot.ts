@@ -27,7 +27,6 @@ const INITIAL_PROMPT = process.env.INITIAL_PROMPT || '';
 
 client.on('messageCreate', async (message: Message) => {
   if (message.author.bot) return;
-  if (!message.content.startsWith('!ask')) return;
 
   // Restrict to allowed text channels if configured
   if (ALLOWED_TEXT_CHANNELS.length && !ALLOWED_TEXT_CHANNELS.includes(message.channel.id)) return;

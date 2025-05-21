@@ -1,24 +1,21 @@
-import { LLama } from '@llama-node/llama-cpp';
+import fetch from 'node-fetch';
 
-const LLAMA_MODEL_PATH = process.env.LLAMA_MODEL_PATH || './llama-model.bin';
-
-let llama: LLama | null = null;
-(async () => {
-  llama = await LLama.load({ modelPath: LLAMA_MODEL_PATH }, false);
-})();
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434/api/generate';
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.2';
 
 export async function generateLlamaResponse(prompt: string): Promise<string> {
-  if (!llama) throw new Error('Llama model not loaded yet.');
-  return new Promise((resolve, reject) => {
-    let output = '';
-    llama!.inference({ prompt, nThreads: 1, nTokPredict: 100 }, (result) => {
-      if (result.type === 'Data' && result.data) {
-        output += result.data.token;
-      } else if (result.type === 'End') {
-        resolve(output.trim());
-      } else if (result.type === 'Error') {
-        reject(result.message);
-      }
-    });
+  const response = await fetch(OLLAMA_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: OLLAMA_MODEL,
+      prompt,
+      stream: false
+    })
   });
+  if (!response.ok) {
+    throw new Error(`Ollama API error: ${response.status} ${await response.text()}`);
+  }
+  const data = await response.json();
+  return data.response?.trim() || '';
 }
