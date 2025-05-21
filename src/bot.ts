@@ -23,10 +23,27 @@ const ALLOWED_TEXT_CHANNELS = (process.env.ALLOWED_TEXT_CHANNELS || '').split(',
 const ALLOWED_VOICE_CHANNELS = (process.env.ALLOWED_VOICE_CHANNELS || '').split(',').map(s => s.trim()).filter(Boolean);
 
 // Initial prompt configuration
-const INITIAL_PROMPT = process.env.INITIAL_PROMPT || '';
+let INITIAL_PROMPT = process.env.INITIAL_PROMPT || '';
+if (INITIAL_PROMPT.startsWith('(') && INITIAL_PROMPT.endsWith(')')) {
+  // Remove parentheses and join lines if it's a multi-line string
+  INITIAL_PROMPT = INITIAL_PROMPT.slice(1, -1).split(/"\s*"/).join(' ').replace(/(^"|"$)/g, '').replace(/\s+/g, ' ').trim();
+}
 
 client.on('messageCreate', async (message: Message) => {
   if (message.author.bot) return;
+
+  // Reset command: !reset
+  if (message.content.trim() === '!reset') {
+    const channelId = message.channel.id;
+    // Remove all messages for this channel from the context database
+    const dbPath = path.join(__dirname, 'context.sqlite3');
+    const Database = (await import('better-sqlite3')).default;
+    const db = new Database(dbPath);
+    db.prepare('DELETE FROM messages WHERE channel_id = ?').run(channelId);
+    db.close();
+    await message.reply('Bot context has been reset for this channel.');
+    return;
+  }
 
   // Restrict to allowed text channels if configured
   if (ALLOWED_TEXT_CHANNELS.length && !ALLOWED_TEXT_CHANNELS.includes(message.channel.id)) return;
