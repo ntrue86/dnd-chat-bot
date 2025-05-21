@@ -75,8 +75,22 @@ client.on('messageCreate', async (message: Message) => {
   // Discord message limit is 2000 chars per message
   const MAX_DISCORD_MESSAGE_LENGTH = 2000;
   if (reply.length > MAX_DISCORD_MESSAGE_LENGTH) {
-    for (let i = 0; i < reply.length; i += MAX_DISCORD_MESSAGE_LENGTH) {
-      await message.reply(reply.slice(i, i + MAX_DISCORD_MESSAGE_LENGTH));
+    let start = 0;
+    while (start < reply.length) {
+      let end = start + MAX_DISCORD_MESSAGE_LENGTH;
+      if (end >= reply.length) {
+        await message.reply(reply.slice(start));
+        break;
+      }
+      // Try to split at the last sentence-ending punctuation before the limit
+      let splitAt = reply.lastIndexOf('.', end);
+      splitAt = Math.max(splitAt, reply.lastIndexOf('!', end));
+      splitAt = Math.max(splitAt, reply.lastIndexOf('?', end));
+      // If no sentence-ending punctuation found, split at the limit
+      if (splitAt <= start) splitAt = end;
+      else splitAt += 1; // include the punctuation
+      await message.reply(reply.slice(start, splitAt).trim());
+      start = splitAt;
     }
   } else {
     await message.reply(reply);
