@@ -72,7 +72,15 @@ client.on('messageCreate', async (message: Message) => {
   }
   const reply = await generateLlamaResponse(fullPrompt);
   saveMessage(channelId, 'Bot', reply);
-  await message.reply(reply);
+  // Discord message limit is 2000 chars per message, but we'll use 4000 as requested
+  const MAX_DISCORD_MESSAGE_LENGTH = 4000;
+  if (reply.length > MAX_DISCORD_MESSAGE_LENGTH) {
+    for (let i = 0; i < reply.length; i += MAX_DISCORD_MESSAGE_LENGTH) {
+      await message.reply(reply.slice(i, i + MAX_DISCORD_MESSAGE_LENGTH));
+    }
+  } else {
+    await message.reply(reply);
+  }
 
   // If user is in a voice channel, join and play TTS
   if (message.member?.voice.channel) {
