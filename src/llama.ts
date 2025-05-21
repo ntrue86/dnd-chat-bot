@@ -25,6 +25,6 @@ export async function generateLlamaResponse(prompt: string): Promise<string> {
   }
   const data = await response.json();
   // Debug: log the response
-  console.log('[Ollama] Response:', JSON.stringify(data, null, 2));
+  console.log('[Ollama] Response:', JSON.stringify(data.response, null, 2));
   return data.response?.trim() || '';
 }
